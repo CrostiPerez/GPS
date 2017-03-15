@@ -1,0 +1,7 @@
+<root>
+  <item name='com.google.android.gms.maps.GoogleMap void setMyLocationEnabled(boolean)'>
+    <annotation name='org.jetbrains.annotations.Contract'>
+      <val val="&quot;null -&gt; fail&quot;" />
+    </annotation>
+  </item>
+</root>

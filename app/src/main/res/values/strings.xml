@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Move Your App</string>
+    <string name="map">Map</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+    <string name="android_studio">Android Studio</string>
+    <string name="android_studio_android_com">android.studio@android.com</string>
+    <string name="textview">TextView</string>
+    <string name="move_your_app">Move Your App</string>
+    <string name="marker_detail_latlng">(%1$.5f, %2$.5f)</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_rutas">Rutas</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="salir">Salir</string>
+    <string name="ruta_1">Ruta 1</string>
+    <string name="title_activity_ruta">Ruta</string>
+
+</resources>
