@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -31,7 +32,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.Locale;
@@ -72,7 +72,7 @@ public class Main extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -129,8 +129,8 @@ public class Main extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
         int id = item.getItemId();
 
         if (id == R.id.rutas) {
@@ -168,11 +168,15 @@ public class Main extends AppCompatActivity
         mMap.setOnMapClickListener(this);
 
         MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(
-                this, R.raw.style);
+                this, R.raw.night);
         mMap.setMapStyle(style);
 
-        PolylineOptions line= (PolylineOptions)getIntent().getExtras().getBundle("line");
-        mMap.addPolyline(line);
+        if (Comunicator.getPolyline() != null){
+            PolylineOptions line= Comunicator.getPolyline();
+
+            mMap.addPolyline(line);
+
+        }
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 15));
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);

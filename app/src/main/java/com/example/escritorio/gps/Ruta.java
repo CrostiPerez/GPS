@@ -10,13 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 public class Ruta extends AppCompatActivity {
-    private GoogleMap mMap;
+
 
 
     private TextView mTextMessage;
@@ -54,17 +52,36 @@ public class Ruta extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
     public void Ruta1(View v){
-        Intent intent= new Intent(this, Main.class);
+        Intent intent = new Intent(this, Main.class);
 
         PolylineOptions line = new PolylineOptions()
-                .add(new LatLng(20.58496, -100.40223))
+                .add(new LatLng(20.54401, -100.38983))
+                .add(new LatLng(20.56530, -100.40080))
+                .add(new LatLng(20.56556, -100.40077))
+                .add(new LatLng(20.56640, -100.40019))
+                .add(new LatLng(20.56732, -100.40045))
+                .add(new LatLng(20.56889, -100.40152))
+                .add(new LatLng(20.56903, -100.40227))
+                .add(new LatLng(20.57007, -100.40350))
+                .add(new LatLng(20.57316, -100.40516))
+                .add(new LatLng(20.57769, -100.40147))
+                .add(new LatLng(20.57738, -100.40077))
+                .add(new LatLng(20.57687, -100.40112))
+                .add(new LatLng(20.57681, -100.40183))
+                .add(new LatLng(20.58168, -100.40680))
+                .add(new LatLng(20.58356, -100.40531))
+                .add(new LatLng(20.58401, -100.40481))
+                .add(new LatLng(20.58396, -100.40339))
+                .add(new LatLng(20.58451, -100.40213))
                 .add(new LatLng(20.59530, -100.40693))
                 .color(Color.parseColor("#f44336"));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(20.59010, -100.40481), 15));
-        mMap.addPolyline(line);
-        intent.putExtra("line", line);
+
+
+
+        Comunicator.setPolyline(line);
+        startActivity(intent);
         finish();
+
     }
     public void salir(View v) {
         finish();
