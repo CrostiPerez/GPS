@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -41,7 +42,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class Main extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener,GoogleMap.OnMapClickListener {
     SupportMapFragment map;
-    private static final int MI_PERMISO_ACCESS_FINE_LOCATION = 1;
+    private static final int MI_PERMISO_ACCESS_FINE_LOCATION = 101;
     public GoogleMap mMap;
     private GoogleApiClient client;
     LatLng queretaro;
@@ -183,46 +184,89 @@ public class Main extends AppCompatActivity
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-        if (ActivityCompat.checkSelfPermission(Main.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(Main.this, Manifest.permission.ACCESS_FINE_LOCATION))
-                new SweetAlertDialog(Main.this, SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("Atención!")
-                        .setContentText("Debes otorgar permisos para activar el GPS")
-                        .setConfirmText("Solicitar Permiso")
-                        .setCancelText("Cancelar")
-                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                sweetAlertDialog.cancel();
-                            }
-                        })
-                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                sweetAlertDialog.cancel();
-                                ActivityCompat.requestPermissions(Main.this,
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        MI_PERMISO_ACCESS_FINE_LOCATION);
-                            }
-                        })
-                        .show();
-            else {
-                ActivityCompat.requestPermissions(Main.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MI_PERMISO_ACCESS_FINE_LOCATION);
-
-            }
-        } else {
 
             mMap.setMyLocationEnabled(true);
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MI_PERMISO_ACCESS_FINE_LOCATION );
+            }
         }
 
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case MI_PERMISO_ACCESS_FINE_LOCATION :
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        mMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+                    new SweetAlertDialog(Main.this, SweetAlertDialog.WARNING_TYPE)
+                            .setTitleText("Atención!")
+                            .setContentText("Debes otorgar permisos para mejorar tu experiencia en Move Your App")
+                            .setConfirmText("Solicitar Permiso")
+                            .setCancelText("Cancelar")
+                            .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    sweetAlertDialog.cancel();
+                                }
+                            })
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    sweetAlertDialog.cancel();
+                                    ActivityCompat.requestPermissions(Main.this,
+                                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                            MI_PERMISO_ACCESS_FINE_LOCATION);
+                                }
+                            })
+                            .show();
+                }
+                break;
         }
+    }
+
+
+
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        client.connect();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        client.disconnect();
+    }
+
+
+
+
     @Override
     public void onMarkerDragStart(Marker marker) {
         if (marker.equals(this.marker)) {
