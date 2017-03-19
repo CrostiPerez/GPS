@@ -138,7 +138,7 @@ public class Main extends AppCompatActivity
 
             Intent i = new Intent(this,Ruta.class);
 
-            onPause();
+          onPause();
             startActivity(i);
 
         } else if (id == R.id.taxis) {
@@ -243,6 +243,9 @@ public class Main extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         client.connect();
+        SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.maps);
+        map.getMapAsync(this);
     }
 
     @Override
@@ -255,6 +258,9 @@ public class Main extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.maps);
+        map.getMapAsync(this);
 
     }
 
@@ -304,6 +310,9 @@ public class Main extends AppCompatActivity
 
 
     }
+
+
+
 
 
 }

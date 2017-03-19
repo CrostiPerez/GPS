@@ -1,6 +1,5 @@
 package com.example.escritorio.gps;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -52,7 +51,7 @@ public class Ruta extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
     public void Ruta1(View v){
-        Intent intent = new Intent(this, Main.class);
+       
 
         PolylineOptions line = new PolylineOptions()
                 .add(new LatLng(20.54401, -100.38983))
@@ -79,8 +78,9 @@ public class Ruta extends AppCompatActivity {
 
 
         Comunicator.setPolyline(line);
-        startActivity(intent);
+
         finish();
+
 
     }
     public void salir(View v) {
