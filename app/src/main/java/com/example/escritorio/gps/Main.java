@@ -161,33 +161,30 @@ public class Main extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-
         queretaro = new LatLng(20.59155, -100.400589);
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(queretaro));
         googleMap.setOnMarkerDragListener(this);
         mMap.setOnMapClickListener(this);
 
         MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(
-                this, R.raw.night);
+                this, R.raw.day);
         mMap.setMapStyle(style);
 
         if (Comunicator.getPolyline() != null){
-            PolylineOptions line= Comunicator.getPolyline();
-
-            mMap.addPolyline(line);
-
+            mMap.clear();
+            PolylineOptions polyline = Comunicator.getPolyline();
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(polyline.getPoints().size()/2), 12.5f));
+            mMap.addPolyline(polyline);
+        } else {
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(queretaro));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 11.5f));
         }
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 15));
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-
-
             mMap.setMyLocationEnabled(true);
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
