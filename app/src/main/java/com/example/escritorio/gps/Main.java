@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -47,7 +49,7 @@ public class Main extends AppCompatActivity
     private GoogleApiClient client;
     LatLng queretaro;
     Marker marker;
-
+    Location location;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         map = SupportMapFragment.newInstance();
@@ -85,8 +87,20 @@ public class Main extends AppCompatActivity
         map.getMapAsync(this);
 
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
-
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED){
+                return;
+            }
+            else {
+                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            }
+        }
+        else {
+            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
 
 
 
@@ -161,33 +175,30 @@ public class Main extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-
         queretaro = new LatLng(20.59155, -100.400589);
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(queretaro));
         googleMap.setOnMarkerDragListener(this);
         mMap.setOnMapClickListener(this);
 
         MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(
-                this, R.raw.night);
+                this, R.raw.day);
         mMap.setMapStyle(style);
 
         if (Comunicator.getPolyline() != null){
-            PolylineOptions line= Comunicator.getPolyline();
-
-            mMap.addPolyline(line);
-
+            mMap.clear();
+            PolylineOptions polyline = Comunicator.getPolyline();
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(polyline.getPoints().size()/2), 12.5f));
+            mMap.addPolyline(polyline);
+        } else {
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(queretaro));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 11.5f));
         }
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 15));
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-
-
             mMap.setMyLocationEnabled(true);
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
