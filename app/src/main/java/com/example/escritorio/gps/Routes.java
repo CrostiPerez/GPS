@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class Routes {
     public static ArrayList<LatLng> getLines (int route) {
         ArrayList<LatLng> line = new ArrayList<>();
+
         switch (route) {
             case R.id.Ruta1:
                 line.add(new LatLng(	20.548940000,-100.392350000	));

@@ -5,4 +5,6 @@
     <color name="colorAccent">#FF40</color>
     <color name="colorTexto">#FFFFFf</color>
     <color name="colorPolyline">#F44336</color>
+    <color name="polylineFillColor">#14A0FF</color>
+    <color name="polylineStrokeColor">#205FBA</color>
 </resources>

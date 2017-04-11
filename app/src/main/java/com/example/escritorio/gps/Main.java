@@ -35,7 +35,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.Locale;
 
@@ -45,9 +44,11 @@ public class Main extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener,GoogleMap.OnMapClickListener {
     SupportMapFragment map;
     private static final int MI_PERMISO_ACCESS_FINE_LOCATION = 101;
+
     public GoogleMap mMap;
     private GoogleApiClient client;
     LatLng queretaro;
+    public StrokedPolyline poolyline;
     Marker marker;
     Location location;
     @Override
@@ -186,9 +187,10 @@ public class Main extends AppCompatActivity
 
         if (Comunicator.getPolyline() != null){
             mMap.clear();
-            PolylineOptions polyline = Comunicator.getPolyline();
+            StrokedPolylineOptions polyline = Comunicator.getPolyline();
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(polyline.getPoints().size()/2), 12.5f));
-            mMap.addPolyline(polyline);
+            poolyline = Comunicator.getPolyline().addPolylineTo(googleMap);
+
         } else {
             mMap.moveCamera(CameraUpdateFactory.newLatLng(queretaro));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 11.5f));

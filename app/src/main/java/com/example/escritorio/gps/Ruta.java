@@ -3,18 +3,19 @@ package com.example.escritorio.gps;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 public class Ruta extends AppCompatActivity {
 
 
-
+    private static final float POLYLINE_WIDTH_IN_PIXELS = 10;
+    private static final float POLYLINE_STROKE_WIDTH_IN_PIXELS = 2;
     private TextView mTextMessage;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -49,18 +50,22 @@ public class Ruta extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
-    public final class JointType extends Object{
 
-    }
     public void DrawRoute(View v){
-        PolylineOptions polyline = new PolylineOptions();
+        StrokedPolylineOptions polyline = new StrokedPolylineOptions();
         for (LatLng latLng: Routes.getLines(v.getId())) {
             polyline.add(latLng);
         }
-        polyline.color(R.color.colorPolyline);
+        int fillColor = ContextCompat.getColor(this, R.color.polylineFillColor);
+        int strokeColor = ContextCompat.getColor(this, R.color.polylineStrokeColor);
 
-        polyline.color(R.color.blue_btn_bg_color);
-        Comunicator.setPolyline(polyline);
+        StrokedPolylineOptions Polyline = new StrokedPolylineOptions()
+                .width(POLYLINE_WIDTH_IN_PIXELS)
+                .fillColor(fillColor)
+                .strokeColor(strokeColor)
+                .strokeWidth(POLYLINE_STROKE_WIDTH_IN_PIXELS);
+
+        Comunicator.setPolyline(Polyline);
         finish();
 
     }

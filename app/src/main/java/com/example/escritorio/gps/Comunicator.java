@@ -1,17 +1,13 @@
 package com.example.escritorio.gps;
 
-import com.google.android.gms.maps.model.PolylineOptions;
-
-
-
 public class Comunicator {
-    private static PolylineOptions polyline = null;
-    public static void setPolyline (PolylineOptions aPolyline)
+    private static StrokedPolylineOptions Polyline = null;
+    public static void setPolyline (StrokedPolylineOptions aPolyline)
     {
 
-        polyline = aPolyline;
+        Polyline= aPolyline;
     }
-    public static PolylineOptions getPolyline (){
-        return polyline;
+    public static StrokedPolylineOptions getPolyline (){
+        return Polyline;
     }
 }
