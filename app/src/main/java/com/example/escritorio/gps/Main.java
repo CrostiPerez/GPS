@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -35,6 +33,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.Locale;
 
@@ -44,13 +43,11 @@ public class Main extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener,GoogleMap.OnMapClickListener {
     SupportMapFragment map;
     private static final int MI_PERMISO_ACCESS_FINE_LOCATION = 101;
-
     public GoogleMap mMap;
     private GoogleApiClient client;
     LatLng queretaro;
-    public StrokedPolyline poolyline;
     Marker marker;
-    Location location;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         map = SupportMapFragment.newInstance();
@@ -88,20 +85,8 @@ public class Main extends AppCompatActivity
         map.getMapAsync(this);
 
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if (checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED){
-                return;
-            }
-            else {
-                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            }
-        }
-        else {
-            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
+
+
 
 
 
@@ -187,14 +172,22 @@ public class Main extends AppCompatActivity
 
         if (Comunicator.getPolyline() != null){
             mMap.clear();
-            StrokedPolylineOptions polyline = Comunicator.getPolyline();
+            PolylineOptions polyline = Comunicator.getPolyline();
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(polyline.getPoints().size()/2), 12.5f));
-            poolyline = Comunicator.getPolyline().addPolylineTo(googleMap);
+            polyline.color(0xFF2E9AFE);
+            polyline.width(15);
+            mMap.addPolyline(polyline);
 
+            PolylineOptions polyline2 = Comunicator.getPolyline2();
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(polyline.getPoints().size()/2), 12.5f));
+            polyline2.color(0xFF00BFFF);
+            polyline2.width(8);
+            mMap.addPolyline(polyline2);
         } else {
             mMap.moveCamera(CameraUpdateFactory.newLatLng(queretaro));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 11.5f));
         }
+
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.getUiSettings().setZoomControlsEnabled(true);
