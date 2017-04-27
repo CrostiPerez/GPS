@@ -53,14 +53,11 @@ public class Main extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         map = SupportMapFragment.newInstance();
 
-
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -86,11 +83,6 @@ public class Main extends AppCompatActivity
         map.getMapAsync(this);
 
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
-
-
-
-
     }
 
     @Override
@@ -199,7 +191,6 @@ public class Main extends AppCompatActivity
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 11.5f));
         }
 
-
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setMapToolbarEnabled(false);
@@ -211,8 +202,6 @@ public class Main extends AppCompatActivity
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MI_PERMISO_ACCESS_FINE_LOCATION);
             }
         }
-
-
     }
 
     @Override
@@ -253,35 +242,26 @@ public class Main extends AppCompatActivity
             }
         }
 
-
-
-
-
     @Override
     protected void onStart() {
         super.onStart();
         client.connect();
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
     }
-
 
     @Override
     protected void onResume() {
         super.onResume();
         if (Comunicator.getPolyline() != null) {
 
-
             SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.maps);
             map.getMapAsync(this);
         }
-
     }
 
     @Override
@@ -289,9 +269,6 @@ public class Main extends AppCompatActivity
         super.onStop();
         client.disconnect();
     }
-
-
-
 
     @Override
     public void onMarkerDragStart(Marker marker) {
@@ -329,9 +306,4 @@ public class Main extends AppCompatActivity
 
 
     }
-
-
-
-
-
 }
