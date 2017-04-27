@@ -50,6 +50,10 @@ public class Ruta extends AppCompatActivity {
     }
 
     public void DrawRoute(View v){
+
+        Comunicator.setParada(Paradas.getPosition(v.getId()));
+
+
         PolylineOptions polyline = new PolylineOptions();
         for (LatLng latLng: Routes.getLines(v.getId())) {
             polyline.add(latLng);

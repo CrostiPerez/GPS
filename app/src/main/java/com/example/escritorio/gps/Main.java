@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -170,19 +171,29 @@ public class Main extends AppCompatActivity
                 this, R.raw.day);
         mMap.setMapStyle(style);
 
-        if (Comunicator.getPolyline() != null){
+
+        if (Comunicator.getPolyline() != null)
+
+        {
             mMap.clear();
             PolylineOptions polyline = Comunicator.getPolyline();
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(polyline.getPoints().size()/2), 12.5f));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(polyline.getPoints().size() / 2), 12.5f));
             polyline.color(0xFF2E9AFE);
             polyline.width(15);
             mMap.addPolyline(polyline);
 
             PolylineOptions polyline2 = Comunicator.getPolyline2();
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(polyline.getPoints().size()/2), 12.5f));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(polyline.getPoints().size() / 2), 12.5f));
             polyline2.color(0xFF00BFFF);
             polyline2.width(8);
             mMap.addPolyline(polyline2);
+
+            ArrayList<MarkerOptions> markerOptions = Comunicator.getParada();
+
+            for (MarkerOptions koko: Comunicator.getParada()) {
+                mMap.addMarker(koko);
+            }
+
         } else {
             mMap.moveCamera(CameraUpdateFactory.newLatLng(queretaro));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 11.5f));
@@ -197,7 +208,7 @@ public class Main extends AppCompatActivity
             mMap.setMyLocationEnabled(true);
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MI_PERMISO_ACCESS_FINE_LOCATION );
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MI_PERMISO_ACCESS_FINE_LOCATION);
             }
         }
 
@@ -205,41 +216,42 @@ public class Main extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case MI_PERMISO_ACCESS_FINE_LOCATION :
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        mMap.setMyLocationEnabled(true);
-                    }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+        {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            switch (requestCode) {
+                case MI_PERMISO_ACCESS_FINE_LOCATION:
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                            mMap.setMyLocationEnabled(true);
+                        }
 
-                } else {
-                    new SweetAlertDialog(Main.this, SweetAlertDialog.WARNING_TYPE)
-                            .setTitleText("Atención!")
-                            .setContentText("Debes otorgar permisos para mejorar tu experiencia en Move Your App")
-                            .setConfirmText("Solicitar Permiso")
-                            .setCancelText("Cancelar")
-                            .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                @Override
-                                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                    sweetAlertDialog.cancel();
-                                }
-                            })
-                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                @Override
-                                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                    sweetAlertDialog.cancel();
-                                    ActivityCompat.requestPermissions(Main.this,
-                                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                            MI_PERMISO_ACCESS_FINE_LOCATION);
-                                }
-                            })
-                            .show();
-                }
-                break;
+                    } else {
+                        new SweetAlertDialog(Main.this, SweetAlertDialog.WARNING_TYPE)
+                                .setTitleText("Atención!")
+                                .setContentText("Debes otorgar permisos para mejorar tu experiencia en Move Your App")
+                                .setConfirmText("Solicitar Permiso")
+                                .setCancelText("Cancelar")
+                                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        sweetAlertDialog.cancel();
+                                    }
+                                })
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        sweetAlertDialog.cancel();
+                                        ActivityCompat.requestPermissions(Main.this,
+                                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                                MI_PERMISO_ACCESS_FINE_LOCATION);
+                                    }
+                                })
+                                .show();
+                    }
+                    break;
+            }
         }
-    }
 
 
 
@@ -309,8 +321,7 @@ public class Main extends AppCompatActivity
 
     @Override
     public void onMapClick(LatLng latLng) {
-        marker = mMap.addMarker(new MarkerOptions()
-                .position(queretaro)
+        marker = mMap.addMarker(new MarkerOptions().position(queretaro)
                 .title("Hola")
                 .snippet("Has apuntado, aquí")
                 .draggable(true)
