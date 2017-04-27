@@ -34,33 +34,32 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class Main extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener,GoogleMap.OnMapClickListener {
+public class Main extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        OnMapReadyCallback, GoogleMap.OnMarkerDragListener,GoogleMap.OnMapClickListener {
+
     SupportMapFragment map;
-    private static final int MI_PERMISO_ACCESS_FINE_LOCATION = 101;
-    public GoogleMap mMap;
-    private GoogleApiClient client;
-    LatLng queretaro;
-    Marker marker;
+    private static final int MI_PERMISO_ACCESS_FINE_LOCATION = 101;  //Constante para solicitar permiso de localización precisa
+    public GoogleMap mMap;                                           //Objeto GoogleMap
+    private GoogleApiClient client;                                  //Objeto del cliente de las APIS de Google
+    LatLng queretaro;                                                //Objeto latitud y longitud para la ubicación general de Querétaro
+    Marker marker;                                                   //Objeto para un marcador
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         map = SupportMapFragment.newInstance();
 
-
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setContentView(R.layout.activity_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //Línea de código para mantener la aplicación en forma vertical
+        setContentView(R.layout.activity_main);                            //Llamada a la layout principal de la aplicación
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -81,16 +80,11 @@ public class Main extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.maps);
-        map.getMapAsync(this);
+        SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager()     //Se agrega un soporte de fragmentos en la activity
+                .findFragmentById(R.id.maps);                                         //llamada al layout del mapa para agregarlo en la aplicación
+        map.getMapAsync(this);                                                        //Guarda cambios en el mapa
 
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
-
-
-
-
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();      //Se usa el objeto client para mandar llamar la API KEY
     }
 
     @Override
@@ -133,24 +127,24 @@ public class Main extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-        int id = item.getItemId();
+        int id = item.getItemId();                      //Menú para la barra desplazable
 
         if (id == R.id.rutas) {
 
-            Intent i = new Intent(this,Ruta.class);
+            Intent i = new Intent(this,Ruta.class);     //Al dar click en "Rutas", se crea un intent que contiene la activity con todas las rutas
 
-          onStop();
-            startActivity(i);
+            onStop();                                   //Se para la activity principal para desocupar espacio en memoria para lanzar la activity "Ruta"
 
-        } else if (id == R.id.taxis) {
+            startActivity(i);                           //Inicializa la activity "Ruta"
+
+        } else if (id == R.id.taxis) {                  //Para programar los demás botones ...
 
 
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_send) {                //...
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -161,49 +155,67 @@ public class Main extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        queretaro = new LatLng(20.59155, -100.400589);                      //Se le asignan al objeto queretaro, coordenadas
 
-        queretaro = new LatLng(20.59155, -100.400589);
+        googleMap.setOnMarkerDragListener(this);                            //Para agregar un evento al arrastrar un marcador
+        mMap.setOnMapClickListener(this);                                   //Para agreagar un evento al dar click en un mapa
 
-        googleMap.setOnMarkerDragListener(this);
-        mMap.setOnMapClickListener(this);
-
-        MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(
-                this, R.raw.day);
-        mMap.setMapStyle(style);
+        MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(       //Creación de un objeto del estilo del mapa
+                this, R.raw.day);                                           //Se puede modificar el estilo en la carpeta raw
+        mMap.setMapStyle(style);                                            //Se aplica el estilo al mapa
 
 
-        if (Comunicator.getPolyline() != null)
+        if (Comunicator.getPolyline() != null) {                                             //Cuando el mapa no esté vacío, hacer..
 
-        {
-            mMap.clear();
-            PolylineOptions polyline = Comunicator.getPolyline();
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(polyline.getPoints().size() / 2), 12.5f));
-            polyline.color(0xFF2E9AFE);
-            polyline.width(15);
-            mMap.addPolyline(polyline);
+            mMap.clear();                                                                    //Limpia el mapa
+            PolylineOptions polyline = Comunicator.getPolyline();                            //Crea un objeto polyline que llama a las coordenadas guardadas en el comunicador
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom                             //Ajusta el mapa al tamaño de la polyline
+                    (polyline.getPoints().get(polyline.getPoints().size() / 2), 12.5f));
+            polyline.color(0xFF2E9AFE);                                                      //Le agrega color a la polyline
+            polyline.width(10);                                                              //Le pone un grosor a la polyline
+            mMap.addPolyline(polyline);                                                      //Agrega la polyline ya con todas sus características en el mapa
 
-            PolylineOptions polyline2 = Comunicator.getPolyline2();
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(polyline.getPoints().size() / 2), 12.5f));
-            polyline2.color(0xFF00BFFF);
-            polyline2.width(8);
-            mMap.addPolyline(polyline2);
+            PolylineOptions polyline2 = Comunicator.getPolyline();                           //Se repite otra polyline menos gruesa para aplicar un estilo a la polyline
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom                             //...
+                    (polyline.getPoints().get(polyline.getPoints().size() / 2), 12.5f));     //...
+            polyline2.color(0xFF00BFFF);                                                     //...
+            polyline2.width(4);                                                              //...
+            mMap.addPolyline(polyline2);                                                     //...
 
-            ArrayList<MarkerOptions> markerOptions = Comunicator.getParada();
+            PolylineOptions polyliner = Comunicator.getPolyline2();                        //Polyline para la ruta de regreso
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom
+                    (polyline.getPoints().get(polyline.getPoints().size() / 2), 12.5f));
+            polyliner.color(0xFFDF0101);
+            polyliner.width(10);
+            mMap.addPolyline(polyliner);
 
-            for (MarkerOptions koko: Comunicator.getParada()) {
-                mMap.addMarker(koko);
+            PolylineOptions polyliner2 = Comunicator.getPolyline2();                        //Polyline para la ruta de regreso
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom
+                    (polyline.getPoints().get(polyline.getPoints().size() / 2), 12.5f));
+            polyliner2.color(0xFFFF4000);
+            polyliner2.width(4);
+            mMap.addPolyline(polyliner2);
+
+
+            ArrayList<MarkerOptions> markerOptions = Comunicator.getParada();                //Crea un objeto de un arreglo de lista que llama a las posiciones guardadas en el comunicador para crear marcadores(paradas)
+
+            for (MarkerOptions koko: Comunicator.getParada()) {                              //for para recorrer el arreglo de lista que va dando posiciones (koko) para agregarlas a un marcador(parada) diferente
+                mMap.addMarker(koko.title("Parada")                                          //Agrega un marcador con su posición (koko) y el título "Parada"
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.circl))        //.icon es para agregar una imagen personalizada a los marcadores y se deben poner en la carpeta drawable
+                        .flat(true));                                                        //.flat es para aplanar el marcador, es importante porque queremos que sean paradas, no ubicaciones
             }
 
         } else {
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(queretaro));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 11.5f));
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 11.5f));           //Si el mapa está vacío, se coloca el mapa sobre las coordenadas de Querétaro con un zoom
         }
 
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);                                         //Se establece un tipo de mapa, ejemplos, satelital, normal, híbrido, etc
+        mMap.getUiSettings().setZoomControlsEnabled(true);                                  //Se activan los controles de zoom sobre el mapa (+ y -)
+        mMap.getUiSettings().setMapToolbarEnabled(false);                                   //Se desactivan las herramientas de GoogleMaps en el mapa
 
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.getUiSettings().setMapToolbarEnabled(false);
 
+        //Comparar versiones para hacer compatible en versiones inferiores a la 6 en el aspecto del permiso de ubicación
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
         } else {
@@ -211,8 +223,6 @@ public class Main extends AppCompatActivity
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MI_PERMISO_ACCESS_FINE_LOCATION);
             }
         }
-
-
     }
 
     @Override
@@ -253,35 +263,26 @@ public class Main extends AppCompatActivity
             }
         }
 
-
-
-
-
     @Override
     protected void onStart() {
         super.onStart();
         client.connect();
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
     }
-
 
     @Override
     protected void onResume() {
         super.onResume();
         if (Comunicator.getPolyline() != null) {
 
-
             SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.maps);
             map.getMapAsync(this);
         }
-
     }
 
     @Override
@@ -289,9 +290,6 @@ public class Main extends AppCompatActivity
         super.onStop();
         client.disconnect();
     }
-
-
-
 
     @Override
     public void onMarkerDragStart(Marker marker) {
@@ -329,9 +327,39 @@ public class Main extends AppCompatActivity
 
 
     }
+    // Declare a variable for the cluster manager.
+    private ClusterManager<MyItem> mClusterManager;
 
+    private void setUpClusterer() {
+        // Position the map.
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(20.59155, -100.400589), 10));
 
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<MyItem>(this, mMap);
 
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
 
+        // Add cluster items (markers) to the cluster manager.
+        addItems();
+    }
 
+    private void addItems() {
+
+        // Set some lat/lng coordinates to start with.
+        double lat = 20.552170000;
+        double lng = -100.394040000;
+
+        // Add ten cluster items in close proximity, for purposes of this example.
+        for (int i = 0; i < 10; i++) {
+            double offset = i / 60d;
+            lat = lat + offset;
+            lng = lng + offset;
+            MyItem offsetItem = new MyItem(lat, lng);
+            mClusterManager.addItem(offsetItem);
+        }
+    }
 }

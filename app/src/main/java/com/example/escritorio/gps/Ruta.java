@@ -62,7 +62,7 @@ public class Ruta extends AppCompatActivity {
         Comunicator.setPolyline(polyline);
 
         PolylineOptions polyline2 = new PolylineOptions();
-        for (LatLng latLng: Routes.getLines(v.getId())) {
+        for (LatLng latLng: Vuelta.getLines(v.getId())) {
             polyline2.add(latLng);
         }
 

@@ -6,9 +6,11 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.ArrayList;
 
 public class Comunicator {
+
     private static PolylineOptions Polyline = null;
     private static PolylineOptions Polyline2 = null;
     private static ArrayList<MarkerOptions> parada = null;
+
     public static ArrayList<MarkerOptions> getParada() {
         return parada;
     }
@@ -16,8 +18,6 @@ public class Comunicator {
     public static void setParada(ArrayList<MarkerOptions> koko) {
         parada = koko;
     }
-
-
 
     public static PolylineOptions getPolyline2() {
         return Polyline2;
@@ -28,13 +28,10 @@ public class Comunicator {
     }
 
 
-
-    public static void setPolyline (PolylineOptions aPolyline)
-    {
-
+    public static void setPolyline (PolylineOptions aPolyline) {
         Polyline= aPolyline;
-
     }
+
     public static PolylineOptions getPolyline (){
         return Polyline;
     }
