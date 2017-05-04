@@ -18,7 +18,10 @@ public class Paradas {
             case R.id.Ruta1:
                 parada.add(new MarkerOptions().position(new LatLng(20.553050000,-100.394490000)).title("Parada"));
                 parada.add(new MarkerOptions().position(new LatLng(20.550670000,-100.39325000)).title("Parada"));
-
+                parada.add(new MarkerOptions().position(new LatLng(20.550744000,-100.39523000)).title("Parada"));
+                parada.add(new MarkerOptions().position(new LatLng(20.550800000,-100.39423000)).title("Parada"));
+                parada.add(new MarkerOptions().position(new LatLng(20.550520000,-100.39512000)).title("Parada"));
+                parada.add(new MarkerOptions().position(new LatLng(20.550660000,-100.39560000)).title("Parada"));
 
 
 

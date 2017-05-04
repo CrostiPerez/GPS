@@ -198,12 +198,14 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
 
 
             ArrayList<MarkerOptions> markerOptions = Comunicator.getParada();                //Crea un objeto de un arreglo de lista que llama a las posiciones guardadas en el comunicador para crear marcadores(paradas)
-
+            setUpClusterer( Comunicator.getParada() );
             for (MarkerOptions koko: Comunicator.getParada()) {                              //for para recorrer el arreglo de lista que va dando posiciones (koko) para agregarlas a un marcador(parada) diferente
                 mMap.addMarker(koko.title("Parada")                                          //Agrega un marcador con su posición (koko) y el título "Parada"
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.circl))        //.icon es para agregar una imagen personalizada a los marcadores y se deben poner en la carpeta drawable
                         .flat(true));                                                        //.flat es para aplanar el marcador, es importante porque queremos que sean paradas, no ubicaciones
             }
+
+
 
         } else {
 
@@ -330,7 +332,7 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
     // Declare a variable for the cluster manager.
     private ClusterManager<MyItem> mClusterManager;
 
-    private void setUpClusterer() {
+    private void setUpClusterer( ArrayList<MarkerOptions> Paradas ) {
         // Position the map.
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(20.59155, -100.400589), 10));
 
@@ -344,21 +346,19 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
         mMap.setOnMarkerClickListener(mClusterManager);
 
         // Add cluster items (markers) to the cluster manager.
-        addItems();
+        addItems( Paradas );
     }
 
-    private void addItems() {
+    private void addItems( ArrayList<MarkerOptions> Paradas ) {
 
         // Set some lat/lng coordinates to start with.
         double lat = 20.552170000;
         double lng = -100.394040000;
-
         // Add ten cluster items in close proximity, for purposes of this example.
-        for (int i = 0; i < 10; i++) {
-            double offset = i / 60d;
-            lat = lat + offset;
-            lng = lng + offset;
-            MyItem offsetItem = new MyItem(lat, lng);
+        for (MarkerOptions element: Paradas) {
+
+            LatLng ubicacion = element.getPosition();
+            MyItem offsetItem = new MyItem(ubicacion.latitude, ubicacion.longitude);
             mClusterManager.addItem(offsetItem);
         }
     }
