@@ -131,7 +131,7 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
 
         if (id == R.id.rutas) {
 
-            Intent i = new Intent(this,Ruta.class);     //Al dar click en "Rutas", se crea un intent que contiene la activity con todas las rutas
+            Intent i = new Intent(this, Ruta.class);     //Al dar click en "Rutas", se crea un intent que contiene la activity con todas las rutas
 
             onStop();                                   //Se para la activity principal para desocupar espacio en memoria para lanzar la activity "Ruta"
 
@@ -197,15 +197,13 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
             mMap.addPolyline(polyliner2);
 
 
-            ArrayList<MarkerOptions> markerOptions = Comunicator.getParada();                //Crea un objeto de un arreglo de lista que llama a las posiciones guardadas en el comunicador para crear marcadores(paradas)
-            setUpClusterer( Comunicator.getParada() );
-            for (MarkerOptions koko: Comunicator.getParada()) {                              //for para recorrer el arreglo de lista que va dando posiciones (koko) para agregarlas a un marcador(parada) diferente
+            // ArrayList<MarkerOptions> markerOptions = Comunicator.getParada();                //Crea un objeto de un arreglo de lista que llama a las posiciones guardadas en el comunicador para crear marcadores(paradas)
+            setUpClusterer(Comunicator.getParada());
+            /*for (MarkerOptions koko: Comunicator.getParada()) {                              //for para recorrer el arreglo de lista que va dando posiciones (koko) para agregarlas a un marcador(parada) diferente
                 mMap.addMarker(koko.title("Parada")                                          //Agrega un marcador con su posición (koko) y el título "Parada"
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.circl))        //.icon es para agregar una imagen personalizada a los marcadores y se deben poner en la carpeta drawable
                         .flat(true));                                                        //.flat es para aplanar el marcador, es importante porque queremos que sean paradas, no ubicaciones
-            }
-
-
+            }*/
 
         } else {
 
@@ -228,42 +226,41 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-        {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-            switch (requestCode) {
-                case MI_PERMISO_ACCESS_FINE_LOCATION:
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                            mMap.setMyLocationEnabled(true);
-                        }
-
-                    } else {
-                        new SweetAlertDialog(Main.this, SweetAlertDialog.WARNING_TYPE)
-                                .setTitleText("Atención!")
-                                .setContentText("Debes otorgar permisos para mejorar tu experiencia en Move Your App")
-                                .setConfirmText("Solicitar Permiso")
-                                .setCancelText("Cancelar")
-                                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                    @Override
-                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                        sweetAlertDialog.cancel();
-                                    }
-                                })
-                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                    @Override
-                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                        sweetAlertDialog.cancel();
-                                        ActivityCompat.requestPermissions(Main.this,
-                                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                                MI_PERMISO_ACCESS_FINE_LOCATION);
-                                    }
-                                })
-                                .show();
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case MI_PERMISO_ACCESS_FINE_LOCATION:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        mMap.setMyLocationEnabled(true);
                     }
-                    break;
-            }
+
+                } else {
+                    new SweetAlertDialog(Main.this, SweetAlertDialog.WARNING_TYPE)
+                            .setTitleText("Atención!")
+                            .setContentText("Debes otorgar permisos para mejorar tu experiencia en Move Your App")
+                            .setConfirmText("Solicitar Permiso")
+                            .setCancelText("Cancelar")
+                            .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    sweetAlertDialog.cancel();
+                                }
+                            })
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    sweetAlertDialog.cancel();
+                                    ActivityCompat.requestPermissions(Main.this,
+                                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                            MI_PERMISO_ACCESS_FINE_LOCATION);
+                                }
+                            })
+                            .show();
+                }
+                break;
         }
+    }
 
     @Override
     protected void onStart() {
@@ -297,10 +294,11 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
     public void onMarkerDragStart(Marker marker) {
         if (marker.equals(this.marker)) {
             Toast.makeText(this, "START", Toast.LENGTH_SHORT).show();
-        }}
+        }
+    }
 
     @Override
-    public void onMarkerDrag(Marker marker){
+    public void onMarkerDrag(Marker marker) {
         if (marker.equals(this.marker)) {
             String newTitle = String.format(Locale.getDefault(),
                     getString(R.string.marker_detail_latlng),
@@ -310,8 +308,9 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
             setTitle(newTitle);
         }
     }
+
     @Override
-    public void onMarkerDragEnd(Marker marker){
+    public void onMarkerDragEnd(Marker marker) {
         if (marker.equals(this.marker)) {
             Toast.makeText(this, "END", Toast.LENGTH_SHORT).show();
 
@@ -326,13 +325,12 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
                 .snippet("Has apuntado, aquí")
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-
-
     }
+
     // Declare a variable for the cluster manager.
     private ClusterManager<MyItem> mClusterManager;
 
-    private void setUpClusterer( ArrayList<MarkerOptions> Paradas ) {
+    private void setUpClusterer(ArrayList<MarkerOptions> Paradas) {
         // Position the map.
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(20.59155, -100.400589), 10));
 
@@ -346,16 +344,17 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
         mMap.setOnMarkerClickListener(mClusterManager);
 
         // Add cluster items (markers) to the cluster manager.
-        addItems( Paradas );
+        addItems(Paradas);
     }
 
-    private void addItems( ArrayList<MarkerOptions> Paradas ) {
+    //private final IconGenerator mClusterIconGenerator = new IconGenerator(getApplicationContext());
 
-        // Set some lat/lng coordinates to start with.
-        double lat = 20.552170000;
-        double lng = -100.394040000;
-        // Add ten cluster items in close proximity, for purposes of this example.
-        for (MarkerOptions element: Paradas) {
+    private void addItems(ArrayList<MarkerOptions> Paradas) {
+
+        mClusterManager.setRenderer(new ClusterRenderer_Blue(this, mMap,
+                mClusterManager, false));
+
+        for (MarkerOptions element : Paradas) {  //Pasa las ubicaciones de los elementos del array paradas al objeto mClusterManager
 
             LatLng ubicacion = element.getPosition();
             MyItem offsetItem = new MyItem(ubicacion.latitude, ubicacion.longitude);

@@ -5,7 +5,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 
 /**
- * Created by Armando on 28/03/2017.
+ * Created by Susy on 28/03/2017.
  */
 
 public class Routes {
