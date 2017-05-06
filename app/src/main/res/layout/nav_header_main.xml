@@ -24,8 +24,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Move Your App"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:text="@string/move_your_apps"
+        android:textAppearance="@android:style/TextAppearance.Material.Title" />
+
 
 
 

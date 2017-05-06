@@ -51,15 +51,23 @@ public class ActivityRuta extends AppCompatActivity {
         Comunicator.setParada(Paradas.getPosition(v.getId()));
         PolylineOptions polylineIda = new PolylineOptions();
         PolylineOptions polylineVuelta = new PolylineOptions();
+
         for (LatLng latLng: RutaIda.getLines(v.getId())) {
-            polylineIda.add(latLng);
-        }
+            polylineIda.add(latLng);}
         Comunicator.setPolylineIda(polylineIda);
+
         for (LatLng latLng: RutaVuelta.getLines(v.getId())) {
-            polylineVuelta.add(latLng);
-        }
+            polylineVuelta.add(latLng);}
         Comunicator.setPolylineVuelta(polylineVuelta);
         finish();
-    }
 
+        String nombre = new String();
+        RutaIda.getNombre();
+        Comunicator.setNombre(nombre);
+    }
+    public void changeValues(View view){
+        String text = getResources().getString(R.string.ruta_92);
+        TextView nombreruta = (TextView)findViewById(R.id.nombre);
+        nombreruta.setText(text);
+    }
 }

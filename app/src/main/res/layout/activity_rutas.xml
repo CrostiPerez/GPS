@@ -5,9 +5,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="38dp">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:tabMode="scrollable">
+
+            <android.support.design.widget.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tab1" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tab2" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tab3" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tab4" />
+        </android.support.design.widget.TabLayout>
+    </android.support.design.widget.AppBarLayout>
+
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        android:backgroundTint="@color/colorTexto"
+        android:clipToPadding="false"
+        android:soundEffectsEnabled="false"
         app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
 
         <LinearLayout
@@ -44,31 +82,34 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/Ruta1"
-                    style="@android:style/Widget.Material.Button.Inset"
+                    android:id="@+id/Ruta92"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
                     android:layout_width="@dimen/buttonWidth"
                     android:layout_height="wrap_content"
                     android:onClick="DrawRoute"
-                    android:text="@string/ruta_1"
-                    android:textSize="@dimen/textSize" />
+                    android:text="@string/ruta_92"
+                    android:textSize="@dimen/textSize"
+                    android:theme="@style/MyButton" />
 
                 <Button
-                    android:id="@+id/Ruta2"
-                    style="@android:style/Widget.Material.Light.Button.Inset"
+                    android:id="@+id/Ruta137"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
                     android:layout_width="@dimen/buttonWidth"
                     android:layout_height="wrap_content"
                     android:onClick="DrawRoute"
-                    android:text="@string/ruta_2"
-                    android:textSize="@dimen/textSize" />
+                    android:text="@string/ruta_137"
+                    android:textSize="@dimen/textSize"
+                    android:theme="@style/MyButton" />
 
                 <Button
                     android:id="@+id/Ruta3"
-                    style="@android:style/Widget.Material.Light.Button.Inset"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
                     android:layout_width="@dimen/buttonWidth"
                     android:layout_height="wrap_content"
                     android:onClick="DrawRoute"
                     android:text="@string/ruta_3"
-                    android:textSize="@dimen/textSize" />
+                    android:textSize="@dimen/textSize"
+                    android:theme="@style/MyButton" />
 
             </TableRow>
 
@@ -81,105 +122,72 @@
 
                 <Button
                     android:id="@+id/Ruta4"
-                    style="@android:style/Widget.Material.Light.Button.Inset"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
                     android:layout_width="@dimen/buttonWidth"
                     android:layout_height="wrap_content"
                     android:onClick="DrawRoute"
                     android:text="@string/ruta_4"
-                    android:textSize="@dimen/textSize" />
+                    android:textSize="@dimen/textSize"
+                    android:theme="@style/MyButton" />
 
                 <Button
                     android:id="@+id/Ruta5"
-                    style="@android:style/Widget.Material.Light.Button.Inset"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
                     android:layout_width="@dimen/buttonWidth"
                     android:layout_height="wrap_content"
                     android:onClick="DrawRoute"
                     android:text="@string/ruta_5"
-                    android:textSize="@dimen/textSize" />
+                    android:textSize="@dimen/textSize"
+                    android:theme="@style/MyButton" />
 
                 <Button
                     android:id="@+id/Ruta6"
-                    style="@android:style/Widget.Material.Light.Button.Inset"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
                     android:layout_width="@dimen/buttonWidth"
                     android:layout_height="wrap_content"
                     android:onClick="DrawRoute"
                     android:text="@string/ruta_6"
-                    android:textSize="@dimen/textSize" />
+                    android:textSize="@dimen/textSize"
+                    android:theme="@style/MyButton" />
             </TableRow>
 
             <TableRow
                 android:id="@+id/container3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/Ruta7"
-                    style="@android:style/Widget.Material.Light.Button.Inset"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
                     android:layout_width="@dimen/buttonWidth"
                     android:layout_height="wrap_content"
                     android:onClick="DrawRoute"
                     android:text="@string/ruta_7"
-                    android:textSize="@dimen/textSize" />
+                    android:textSize="@dimen/textSize"
+                    android:theme="@style/MyButton" />
 
                 <Button
                     android:id="@+id/Ruta8"
-                    style="@android:style/Widget.Material.Light.Button.Inset"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
                     android:layout_width="@dimen/buttonWidth"
                     android:layout_height="wrap_content"
                     android:onClick="DrawRoute"
                     android:text="@string/ruta_8"
-                    android:textSize="@dimen/textSize" />
+                    android:textSize="@dimen/textSize"
+                    android:theme="@style/MyButton" />
 
                 <Button
                     android:id="@+id/Ruta9"
-                    style="@android:style/Widget.Material.Light.Button.Inset"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
                     android:layout_width="@dimen/buttonWidth"
                     android:layout_height="wrap_content"
                     android:onClick="DrawRoute"
                     android:text="@string/ruta_9"
-                    android:textSize="@dimen/textSize" />
+                    android:textSize="@dimen/textSize"
+                    android:theme="@style/MyButton" />
             </TableRow>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
-
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
-        android:layout_width="match_parent"
-        android:layout_height="38dp">
-
-        <android.support.v7.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_scrollFlags="scroll|enterAlways"></android.support.v7.widget.Toolbar>
-
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:tabMode="scrollable">
-
-            <android.support.design.widget.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tab1" />
-
-            <android.support.design.widget.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tab2" />
-
-            <android.support.design.widget.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tab3" />
-
-            <android.support.design.widget.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tab4" />
-        </android.support.design.widget.TabLayout>
-    </android.support.design.widget.AppBarLayout>
 </android.support.design.widget.CoordinatorLayout>

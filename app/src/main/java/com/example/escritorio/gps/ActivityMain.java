@@ -1,6 +1,8 @@
 package com.example.escritorio.gps;
 
 import android.Manifest;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -9,7 +11,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,9 +18,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.AppIndex;
@@ -50,7 +53,16 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     private GoogleApiClient client;                                  //Objeto del cliente de las APIS de Google
     LatLng queretaro;                                                //Objeto latitud y longitud para la ubicación general de Querétaro
     Marker marker;                                                   //Objeto para un marcador
-
+    Fragment fragment = null;
+    FragmentManager fragmentManager;
+    FloatingActionButton fab1, fab2, fab3;
+    Animation FabOpen, FabClose, FabGirar, FabAntiGirar;
+    boolean isOpen = false;
+    boolean cluster = false;
+    private ClusterManager<MyItem> mClusterManager;
+    PolylineOptions polylineIda, polylineVuelta;
+    TextView nombreRuta;
+    String NombredeRuta;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         map = SupportMapFragment.newInstance();
@@ -61,32 +73,134 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab1 = (FloatingActionButton) findViewById(R.id.fab_plus);
+        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        fab3 = (FloatingActionButton) findViewById(R.id.fab3);
+        FabOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+        FabClose = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
+        FabGirar = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
+        FabAntiGirar = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anti_rotate);
+        nombreRuta = (TextView)findViewById(R.id.nombre);
+        fab1.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+            public void onClick (View v) {
+                if (isOpen) {
+                    fab2.startAnimation(FabClose);
+                    fab3.startAnimation(FabClose);
+                    fab1.startAnimation(FabAntiGirar);
+                    fab2.setClickable(false);
+                    fab3.setClickable(false);
+                    isOpen = false;
+                    if (!Comunicator.polylinesAreNull()) {                               //Cuando el mapa no esté vacío, hacer..
+                        mMap.clear();                                                    //Limpia el mapa
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
+                        polylineIda = Comunicator.getPolylineIda();                      //Crea un objeto polyline que llama a las coordenadas guardadas en el comunicador
+
+                        mMap.addPolyline(setStyle(                                      //Agrega la polyline ya con todas sus características en el mapa
+                                polylineIda,
+                                getResources().getColor(R.color.polylineIdaGruesa),
+                                Comunicator.GRUESOi));
+                        mMap.addPolyline(setStyle(                                      //Se repite otra polyline menos gruesa para aplicar un estilo a la polyline
+                                polylineIda,
+                                getResources().getColor(R.color.polylineIdaDelgada),
+                                Comunicator.DELGADOi));
+
+                        polylineVuelta = Comunicator.getPolylineVuelta();  //Polyline para la ruta de regreso
+                        mMap.addPolyline(setStyle(
+                                polylineVuelta,
+                                getResources().getColor(R.color.polylineVueltaGruesa),
+                                Comunicator.GRUESO));
+                        mMap.addPolyline(setStyle(
+                                polylineVuelta,
+                                getResources().getColor(R.color.polylineVueltaDelgada),
+                                Comunicator.DELGADO));
+
+                        //Ajusta el mapa al tamaño de la polyline
+                        if(polylineIda.getPoints().size() > polylineVuelta.getPoints().size()) {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Comunicator.getBoundsVuelta().getCenter(), 12));
+                        } else {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Comunicator.getBoundsIda().getCenter(), 12));
+                        }}
+                } else {
+                    fab2.startAnimation(FabOpen);
+                    fab3.startAnimation(FabOpen);
+                    fab1.startAnimation(FabGirar);
+                    fab2.setClickable(true);
+                    fab3.setClickable(true);
+                    isOpen = true;
+                }
+
+            }});
+        fab2.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick (View v) {
+                    if (!Comunicator.polylinesAreNull()) {
+                        mMap.clear();
+                        polylineIda = Comunicator.getPolylineIda();                      //Crea un objeto polyline que llama a las coordenadas guardadas en el comunicador
+
+                        mMap.addPolyline(setStyle(                                      //Agrega la polyline ya con todas sus características en el mapa
+                                polylineIda,
+                                getResources().getColor(R.color.polylineIdaGruesa),
+                                Comunicator.GRUESOi));
+                        mMap.addPolyline(setStyle(                                      //Se repite otra polyline menos gruesa para aplicar un estilo a la polyline
+                                polylineIda,
+                                getResources().getColor(R.color.polylineIdaDelgada),
+                                Comunicator.DELGADOi));
+
+                        //Ajusta el mapa al tamaño de la polyline
+                        if(polylineIda.getPoints().size() > polylineVuelta.getPoints().size()) {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Comunicator.getBoundsVuelta().getCenter(), 12));
+                        } else {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Comunicator.getBoundsIda().getCenter(), 12));
+                        }
+                    }
+                }});
+        fab3.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick (View v) {
+                if (!Comunicator.polylinesAreNull()) {
+                    mMap.clear();
+                polylineVuelta = Comunicator.getPolylineVuelta();  //Polyline para la ruta de regreso
+                mMap.addPolyline(setStyle(
+                        polylineVuelta,
+                        getResources().getColor(R.color.polylineVueltaGruesa),
+                        Comunicator.GRUESO));
+                mMap.addPolyline(setStyle(
+                        polylineVuelta,
+                        getResources().getColor(R.color.polylineVueltaDelgada),
+                        Comunicator.DELGADO));
+                    //Ajusta el mapa al tamaño de la polyline
+                    if(polylineIda.getPoints().size() > polylineVuelta.getPoints().size()) {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Comunicator.getBoundsVuelta().getCenter(), 12));
+                    } else {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Comunicator.getBoundsIda().getCenter(), 12));
+                    }
+                }
+            }});
+
+    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+            this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+    NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager()     //Se agrega un soporte de fragmentos en la activity
-                .findFragmentById(R.id.maps);                                         //llamada al layout del mapa para agregarlo en la aplicación
+    SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager()     //Se agrega un soporte de fragmentos en la activity
+            .findFragmentById(R.id.maps);                                         //llamada al layout del mapa para agregarlo en la aplicación
         map.getMapAsync(this);                                                        //Guarda cambios en el mapa
 
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();      //Se usa el objeto client para mandar llamar la API KEY
-    }
+    client =new GoogleApiClient.Builder(this).
 
+    addApi(AppIndex.API).
+
+    build();      //Se usa el objeto client para mandar llamar la API KEY
+    // displayView(0);
+
+}
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -100,11 +214,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.main, menu);
-
-
+     //   getMenuInflater().inflate(R.menu.main, menu);
+     //   MenuInflater menuInflater = getMenuInflater();
         return true;
     }
 
@@ -147,6 +258,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+
     }
 
     @Override
@@ -164,18 +276,19 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         //Añade polylines al mapa
         if (!Comunicator.polylinesAreNull()) {                               //Cuando el mapa no esté vacío, hacer..
             mMap.clear();                                                    //Limpia el mapa
-            PolylineOptions polylineIda, polylineVuelta;
 
             polylineIda = Comunicator.getPolylineIda();                      //Crea un objeto polyline que llama a las coordenadas guardadas en el comunicador
-
+            NombredeRuta = Comunicator.getNombre();
+            nombreRuta.setText(NombredeRuta);
+            nombreRuta.setVisibility(View.VISIBLE);
             mMap.addPolyline(setStyle(                                      //Agrega la polyline ya con todas sus características en el mapa
                     polylineIda,
                     getResources().getColor(R.color.polylineIdaGruesa),
-                    Comunicator.GRUESO));
+                    Comunicator.GRUESOi));
             mMap.addPolyline(setStyle(                                      //Se repite otra polyline menos gruesa para aplicar un estilo a la polyline
                     polylineIda,
                     getResources().getColor(R.color.polylineIdaDelgada),
-                    Comunicator.DELGADO));
+                    Comunicator.DELGADOi));
 
             polylineVuelta = Comunicator.getPolylineVuelta();  //Polyline para la ruta de regreso
             mMap.addPolyline(setStyle(
@@ -323,7 +436,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     }
 
     // Declare a variable for the cluster manager.
-    private ClusterManager<MyItem> mClusterManager;
+
 
     private void setUpClusterer(ArrayList<MarkerOptions> Paradas) {
         // Initialize the manager with the context and the map.
@@ -350,7 +463,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
 
             LatLng ubicacion = element.getPosition();
             MyItem offsetItem = new MyItem(ubicacion.latitude, ubicacion.longitude);
-            mClusterManager.addItem(offsetItem);
+           mClusterManager.addItem(offsetItem);
         }
     }
 
@@ -360,4 +473,25 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         polylineOptions.width(width);                                      //Le pone un grosor a la polyline
         return polylineOptions;
     }
+
+    private void displayView(int position) {
+        fragment = null;
+        String fragmentTags = "";
+        switch (position) {
+            case 0:
+                fragment = new SearchFragment();
+                break;
+
+            default:
+                break;
+        }
+
+        if (fragment != null) {
+            fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, fragmentTags).commit();
+        }
+}
+
+
+
 }

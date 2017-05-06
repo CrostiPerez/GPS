@@ -11,6 +11,10 @@ public class Comunicator {
     private static PolylineOptions polylineIda = null;
     private static PolylineOptions polylineVuelta = null;
     private static ArrayList<MarkerOptions> parada = null;
+    private static String nombre = null;
+    public static final int GRUESOi = 14;
+    public static final int DELGADOi = 8;
+
     public static final int GRUESO = 10;
     public static final int DELGADO = 4;
 
@@ -20,6 +24,9 @@ public class Comunicator {
     public static ArrayList<MarkerOptions> getParada() {
         return parada;
     }
+
+    public static void setNombre(String string){nombre = string;}
+    public  static String getNombre() {return nombre;}
 
     public static PolylineOptions getPolylineIda (){
         return polylineIda;

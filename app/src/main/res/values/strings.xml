@@ -83,6 +83,9 @@
     <string name="ruta_63">Línea 4</string>
     <string name="ruta_64">Línea 7</string>
     <string name="ruta_65">Línea 8</string>
+    <string name="ruta_92">Ruta 92</string>
+    <string name="ruta_137">Ruta 137</string>
+    <string name="move_your_apps">Move Your App</string>
 
 
 </resources>

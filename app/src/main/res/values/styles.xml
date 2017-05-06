@@ -6,7 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="itemTextColor">@color/colorPrimary</item>
+        <item name="itemTextColor">@color/cardview_dark_background</item>
         <item name="itemIconTint">@color/colorPrimary</item>
         <item name="titleTextColor">@color/colorTexto</item>
         <item name="colorControlNormal">@color/colorTexto</item>
@@ -22,4 +22,9 @@
         <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="MyButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">#FF0000</item>
+        <item name="colorButtonNormal">#FF8000</item>
+        <item name="itemTextColor">#FFFFFF</item>
+    </style>
 </resources>

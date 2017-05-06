@@ -1,22 +1,13 @@
 package com.example.escritorio.gps;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
-import com.google.maps.android.ui.IconGenerator;
 
 /**
  * Created by Moises on 04-May-17.
@@ -92,12 +83,12 @@ public class ClusterRenderer_Blue extends DefaultClusterRenderer<MyItem> {
     @Override
     protected int getColor(int clusterSize) {
 
-        if(blue == true){
+        if(!blue){
 
-            return Color.parseColor("#15DFE9");
+            return Color.parseColor("#2E9AFE");
         } else{
 
-            return Color.parseColor("#E91616");
+            return Color.parseColor("#DF0101");
 
         }
     }
