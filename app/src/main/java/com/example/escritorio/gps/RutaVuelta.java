@@ -6,7 +6,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 
 /**
- * Created by escritorio on 29/04/2017.
+ * Created by Sergio on 29/04/2017.
  */
 
 public class RutaVuelta {

@@ -2,10 +2,10 @@ package com.example.escritorio.gps;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
-import com.google.maps.android.clustering.view.ClusterRenderer;
+
 
 /**
- * Created by Sergio :3 on 29/04/2017.
+ * Created by Sergio on 29/04/2017.
  */
 
 public class MyItem implements ClusterItem {
@@ -22,3 +22,7 @@ public class MyItem implements ClusterItem {
         return mPosition;
     }
 }
+
+
+
+
