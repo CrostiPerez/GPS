@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Created by Susy on 28/03/2017.
  */
 
-public class Routes {
+public class RutaIda {
     public static ArrayList<LatLng> getLines (int route) {
         ArrayList<LatLng> line = new ArrayList<>();
 

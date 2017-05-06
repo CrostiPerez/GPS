@@ -7,4 +7,8 @@
     <color name="colorPolyline">#F44336</color>
     <color name="polylineFillColor">#14A0FF</color>
     <color name="polylineStrokeColor">#205FBA</color>
+    <color name="polylineIdaGruesa">#FF2E9AFE</color>
+    <color name="polylineIdaDelgada">#FF00BFFF</color>
+    <color name="polylineVueltaGruesa">#FFDF0101</color>
+    <color name="polylineVueltaDelgada">#FFFF4000</color>
 </resources>

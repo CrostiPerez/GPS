@@ -41,7 +41,7 @@ import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class Main extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+public class ActivityMain extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         OnMapReadyCallback, GoogleMap.OnMarkerDragListener,GoogleMap.OnMapClickListener {
 
     SupportMapFragment map;
@@ -126,12 +126,9 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
         int id = item.getItemId();                      //Menú para la barra desplazable
-
         if (id == R.id.rutas) {
-
-            Intent i = new Intent(this, Ruta.class);     //Al dar click en "Rutas", se crea un intent que contiene la activity con todas las rutas
+            Intent i = new Intent(this, ActivityRuta.class);     //Al dar click en "Rutas", se crea un intent que contiene la activity con todas las rutas
 
             onStop();                                   //Se para la activity principal para desocupar espacio en memoria para lanzar la activity "Ruta"
 
@@ -164,38 +161,38 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
                 this, R.raw.day);                                           //Se puede modificar el estilo en la carpeta raw
         mMap.setMapStyle(style);                                            //Se aplica el estilo al mapa
 
+        //Añade polylines al mapa
+        if (!Comunicator.polylinesAreNull()) {                               //Cuando el mapa no esté vacío, hacer..
+            mMap.clear();                                                    //Limpia el mapa
+            PolylineOptions polylineIda, polylineVuelta;
 
-        if (Comunicator.getPolyline() != null) {                                             //Cuando el mapa no esté vacío, hacer..
+            polylineIda = Comunicator.getPolylineIda();                      //Crea un objeto polyline que llama a las coordenadas guardadas en el comunicador
 
-            mMap.clear();                                                                    //Limpia el mapa
-            PolylineOptions polyline = Comunicator.getPolyline();                            //Crea un objeto polyline que llama a las coordenadas guardadas en el comunicador
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom                             //Ajusta el mapa al tamaño de la polyline
-                    (polyline.getPoints().get(polyline.getPoints().size() / 2), 12.5f));
-            polyline.color(0xFF2E9AFE);                                                      //Le agrega color a la polyline
-            polyline.width(10);                                                              //Le pone un grosor a la polyline
-            mMap.addPolyline(polyline);                                                      //Agrega la polyline ya con todas sus características en el mapa
+            mMap.addPolyline(setStyle(                                      //Agrega la polyline ya con todas sus características en el mapa
+                    polylineIda,
+                    getResources().getColor(R.color.polylineIdaGruesa),
+                    Comunicator.GRUESO));
+            mMap.addPolyline(setStyle(                                      //Se repite otra polyline menos gruesa para aplicar un estilo a la polyline
+                    polylineIda,
+                    getResources().getColor(R.color.polylineIdaDelgada),
+                    Comunicator.DELGADO));
 
-            PolylineOptions polyline2 = Comunicator.getPolyline();                           //Se repite otra polyline menos gruesa para aplicar un estilo a la polyline
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom                             //...
-                    (polyline.getPoints().get(polyline.getPoints().size() / 2), 12.5f));     //...
-            polyline2.color(0xFF00BFFF);                                                     //...
-            polyline2.width(4);                                                              //...
-            mMap.addPolyline(polyline2);                                                     //...
+            polylineVuelta = Comunicator.getPolylineVuelta();  //Polyline para la ruta de regreso
+            mMap.addPolyline(setStyle(
+                    polylineVuelta,
+                    getResources().getColor(R.color.polylineVueltaGruesa),
+                    Comunicator.GRUESO));
+            mMap.addPolyline(setStyle(
+                    polylineVuelta,
+                    getResources().getColor(R.color.polylineVueltaDelgada),
+                    Comunicator.DELGADO));
 
-            PolylineOptions polyliner = Comunicator.getPolyline2();                        //Polyline para la ruta de regreso
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom
-                    (polyline.getPoints().get(polyline.getPoints().size() / 2), 12.5f));
-            polyliner.color(0xFFDF0101);
-            polyliner.width(10);
-            mMap.addPolyline(polyliner);
-
-            PolylineOptions polyliner2 = Comunicator.getPolyline2();                        //Polyline para la ruta de regreso
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom
-                    (polyline.getPoints().get(polyline.getPoints().size() / 2), 12.5f));
-            polyliner2.color(0xFFFF4000);
-            polyliner2.width(4);
-            mMap.addPolyline(polyliner2);
-
+            //Ajusta el mapa al tamaño de la polyline
+            if(polylineIda.getPoints().size() > polylineVuelta.getPoints().size()) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Comunicator.getBoundsVuelta().getCenter(), 12));
+            } else {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Comunicator.getBoundsIda().getCenter(), 12));
+            }
 
             // ArrayList<MarkerOptions> markerOptions = Comunicator.getParada();                //Crea un objeto de un arreglo de lista que llama a las posiciones guardadas en el comunicador para crear marcadores(paradas)
             setUpClusterer(Comunicator.getParada());
@@ -206,8 +203,7 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
             }*/
 
         } else {
-
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 11.5f));           //Si el mapa está vacío, se coloca el mapa sobre las coordenadas de Querétaro con un zoom
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queretaro, 11f));           //Si el mapa está vacío, se coloca el mapa sobre las coordenadas de Querétaro con un zoom
         }
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);                                         //Se establece un tipo de mapa, ejemplos, satelital, normal, híbrido, etc
@@ -236,7 +232,7 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
                     }
 
                 } else {
-                    new SweetAlertDialog(Main.this, SweetAlertDialog.WARNING_TYPE)
+                    new SweetAlertDialog(ActivityMain.this, SweetAlertDialog.WARNING_TYPE)
                             .setTitleText("Atención!")
                             .setContentText("Debes otorgar permisos para mejorar tu experiencia en Move Your App")
                             .setConfirmText("Solicitar Permiso")
@@ -251,7 +247,7 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
                                 @Override
                                 public void onClick(SweetAlertDialog sweetAlertDialog) {
                                     sweetAlertDialog.cancel();
-                                    ActivityCompat.requestPermissions(Main.this,
+                                    ActivityCompat.requestPermissions(ActivityMain.this,
                                             new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                             MI_PERMISO_ACCESS_FINE_LOCATION);
                                 }
@@ -276,8 +272,7 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
     @Override
     protected void onResume() {
         super.onResume();
-        if (Comunicator.getPolyline() != null) {
-
+        if (!Comunicator.polylinesAreNull()) {
             SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.maps);
             map.getMapAsync(this);
@@ -331,9 +326,6 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
     private ClusterManager<MyItem> mClusterManager;
 
     private void setUpClusterer(ArrayList<MarkerOptions> Paradas) {
-        // Position the map.
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(20.59155, -100.400589), 10));
-
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
         mClusterManager = new ClusterManager<MyItem>(this, mMap);
@@ -360,5 +352,12 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
             MyItem offsetItem = new MyItem(ubicacion.latitude, ubicacion.longitude);
             mClusterManager.addItem(offsetItem);
         }
+    }
+
+    //Devuelve la polyline con el estilo aplicado
+    private PolylineOptions setStyle(PolylineOptions polylineOptions, int color, int width) {
+        polylineOptions.color(color);                                      //Le agrega color a la polyline
+        polylineOptions.width(width);                                      //Le pone un grosor a la polyline
+        return polylineOptions;
     }
 }

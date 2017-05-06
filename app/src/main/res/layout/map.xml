@@ -8,7 +8,7 @@
 
 
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.escritorio.gps.Main"
+    tools:context="com.example.escritorio.gps.ActivityMain"
     tools:showIn="@layout/app_bar_main">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -18,7 +18,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.example.escritorio.gps.Main" />
+        tools:context="com.example.escritorio.gps.ActivityMain" />
 
 
 </RelativeLayout>

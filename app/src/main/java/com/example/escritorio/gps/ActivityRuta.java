@@ -11,9 +11,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-public class Ruta extends AppCompatActivity {
-
-
+public class ActivityRuta extends AppCompatActivity {
     private TextView mTextMessage;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -50,29 +48,18 @@ public class Ruta extends AppCompatActivity {
     }
 
     public void DrawRoute(View v){
-
         Comunicator.setParada(Paradas.getPosition(v.getId()));
-
-
-        PolylineOptions polyline = new PolylineOptions();
-        for (LatLng latLng: Routes.getLines(v.getId())) {
-            polyline.add(latLng);
+        PolylineOptions polylineIda = new PolylineOptions();
+        PolylineOptions polylineVuelta = new PolylineOptions();
+        for (LatLng latLng: RutaIda.getLines(v.getId())) {
+            polylineIda.add(latLng);
         }
-
-        Comunicator.setPolyline(polyline);
-
-        PolylineOptions polyline2 = new PolylineOptions();
-        for (LatLng latLng: Vuelta.getLines(v.getId())) {
-            polyline2.add(latLng);
+        Comunicator.setPolylineIda(polylineIda);
+        for (LatLng latLng: RutaVuelta.getLines(v.getId())) {
+            polylineVuelta.add(latLng);
         }
-
-        Comunicator.setPolyline2(polyline2);
+        Comunicator.setPolylineVuelta(polylineVuelta);
         finish();
-
     }
-
-
-
-
 
 }

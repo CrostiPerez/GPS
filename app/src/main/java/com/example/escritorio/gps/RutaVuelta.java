@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * Created by escritorio on 29/04/2017.
  */
 
-public class Vuelta {
+public class RutaVuelta {
     public static ArrayList<LatLng> getLines (int route) {
         ArrayList<LatLng> line = new ArrayList<>();
 
