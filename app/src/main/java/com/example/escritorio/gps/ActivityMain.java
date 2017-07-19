@@ -1,13 +1,14 @@
 package com.example.escritorio.gps;
 
 import android.Manifest;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -20,11 +21,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,12 +45,17 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class ActivityMain extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
-        OnMapReadyCallback, GoogleMap.OnMarkerDragListener,GoogleMap.OnMapClickListener {
+        OnMapReadyCallback, GoogleMap.OnMarkerDragListener,GoogleMap.OnMapClickListener, GoogleMap.OnCameraMoveStartedListener,
+        GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnCameraMoveCanceledListener,
+        GoogleMap.OnCameraIdleListener{
+    FloatingSearchView mSearchView;
 
     SupportMapFragment map;
     private static final int MI_PERMISO_ACCESS_FINE_LOCATION = 101;  //Constante para solicitar permiso de localización precisa
@@ -53,16 +63,65 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     private GoogleApiClient client;                                  //Objeto del cliente de las APIS de Google
     LatLng queretaro;                                                //Objeto latitud y longitud para la ubicación general de Querétaro
     Marker marker;                                                   //Objeto para un marcador
-    Fragment fragment = null;
-    FragmentManager fragmentManager;
+
+
     FloatingActionButton fab1, fab2, fab3;
     Animation FabOpen, FabClose, FabGirar, FabAntiGirar;
     boolean isOpen = false;
-    boolean cluster = false;
+    private boolean mIsDarkSearchTheme = false;
     private ClusterManager<MyItem> mClusterManager;
     PolylineOptions polylineIda, polylineVuelta;
     TextView nombreRuta;
     String NombredeRuta;
+
+    //Dummy data for search suggestions
+    private static final List<String> SOME_HARDCODED_DATA;
+    static {
+        SOME_HARDCODED_DATA = new ArrayList<>();
+        SOME_HARDCODED_DATA.add("One");
+        SOME_HARDCODED_DATA.add("Two");
+        SOME_HARDCODED_DATA.add("Three");
+        SOME_HARDCODED_DATA.add("Four");
+    }
+
+    //This just for illustration how to populate suggestions
+    private static class SimpleSuggestions implements SearchSuggestion {
+        private final String mData;
+        public SimpleSuggestions(String string) {
+            mData = string;
+        }
+        @Override
+        public String getBody() {
+            return mData;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(mData);
+        }
+
+        public static final Parcelable.Creator<SimpleSuggestions> CREATOR
+                = new Parcelable.Creator<SimpleSuggestions>() {
+            public SimpleSuggestions createFromParcel(Parcel in) {
+                return new SimpleSuggestions(in);
+            }
+
+            public SimpleSuggestions[] newArray(int size) {
+                return new SimpleSuggestions[size];
+            }
+        };
+
+        private SimpleSuggestions(Parcel in) {
+            mData = in.readString();
+        }
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         map = SupportMapFragment.newInstance();
@@ -72,6 +131,24 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);                            //Llamada a la layout principal de la aplicación
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
+        mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, final String newQuery) {
+                List<SearchSuggestion> list = new ArrayList<SearchSuggestion>();
+                //emulating search on dummy data
+                for (String item : SOME_HARDCODED_DATA) {
+                    if (item.contains(newQuery)) {
+                        list.add(new SimpleSuggestions(item));
+                    }
+                }
+                mSearchView.swapSuggestions(list);
+            }
+        });
+
+        //now search view controlling drawer open/closer
+
 
         fab1 = (FloatingActionButton) findViewById(R.id.fab_plus);
         fab2 = (FloatingActionButton) findViewById(R.id.fab2);
@@ -178,7 +255,18 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                     }
                 }
             }});
+        View decorView = getWindow().getDecorView();
+        if(Build.VERSION.SDK_INT >= 19 ){
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);}
 
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
             this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -187,7 +275,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
 
     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        mSearchView.attachNavigationDrawerToMenuButton(drawer);
 
     SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager()     //Se agrega un soporte de fragmentos en la activity
             .findFragmentById(R.id.maps);                                         //llamada al layout del mapa para agregarlo en la aplicación
@@ -200,7 +288,42 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     build();      //Se usa el objeto client para mandar llamar la API KEY
     // displayView(0);
 
+        if(Build.VERSION.SDK_INT < 19 || Build.VERSION.SDK_INT >= 21){
+            FrameLayout statusBar = (FrameLayout) findViewById(R.id.statusBar);
+            ViewGroup.LayoutParams layoutParams = statusBar.getLayoutParams();
+            layoutParams.height = 0;
+        }
+       /* mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, final String newQuery) {
+
+                //get suggestions based on newQuery
+
+                //pass them on to the search view
+                mSearchView.swapSuggestions(newSuggestions);
+            }
+        });*/
+
+        setupSearchBar();
 }
+    @Override
+    public void onWindowFocusChanged(boolean hasfocus){
+        super.onWindowFocusChanged(hasfocus);
+        View decorView = getWindow().getDecorView();
+        if(Build.VERSION.SDK_INT >= 19 ){
+        if(hasfocus){
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);}
+
+    }
+    else  if (hasfocus && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+    }
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -265,7 +388,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         queretaro = new LatLng(20.59155, -100.400589);                      //Se le asignan al objeto queretaro, coordenadas
-
+        mMap.setPadding(0,150,0,85);
         googleMap.setOnMarkerDragListener(this);                            //Para agregar un evento al arrastrar un marcador
         mMap.setOnMapClickListener(this);                                   //Para agreagar un evento al dar click en un mapa
 
@@ -273,14 +396,20 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                 this, R.raw.day);                                           //Se puede modificar el estilo en la carpeta raw
         mMap.setMapStyle(style);                                            //Se aplica el estilo al mapa
 
+        mMap.setOnCameraIdleListener(this);
+        mMap.setOnCameraMoveStartedListener(this);
+        mMap.setOnCameraMoveListener(this);
+        mMap.setOnCameraMoveCanceledListener(this);
+
         //Añade polylines al mapa
         if (!Comunicator.polylinesAreNull()) {                               //Cuando el mapa no esté vacío, hacer..
             mMap.clear();                                                    //Limpia el mapa
 
             polylineIda = Comunicator.getPolylineIda();                      //Crea un objeto polyline que llama a las coordenadas guardadas en el comunicador
-            NombredeRuta = Comunicator.getNombre();
+            NombredeRuta = RutaIda.getNombre();
             nombreRuta.setText(NombredeRuta);
             nombreRuta.setVisibility(View.VISIBLE);
+
             mMap.addPolyline(setStyle(                                      //Agrega la polyline ya con todas sus características en el mapa
                     polylineIda,
                     getResources().getColor(R.color.polylineIdaGruesa),
@@ -371,6 +500,39 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void setupSearchBar() {
+        //handle menu clicks the same way as you would
+        //in a regular activity
+        mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem item) {
+
+                if (item.getItemId() == R.id.action_change_colors) {
+
+                    mIsDarkSearchTheme = true;
+
+                    //demonstrate setting colors for items
+                    mSearchView.setBackgroundColor(Color.parseColor("#787878"));
+                    mSearchView.setViewTextColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setHintTextColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setActionMenuOverflowColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setMenuItemIconColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setLeftActionIconColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setClearBtnColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setDividerColor(Color.parseColor("#BEBEBE"));
+                    mSearchView.setLeftActionIconColor(Color.parseColor("#e9e9e9"));
+                } else {
+
+                    //just print action
+                    Toast.makeText(getApplicationContext(), item.getTitle(),
+                            Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+    }
+
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -433,6 +595,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                 .snippet("Has apuntado, aquí")
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+
+
     }
 
     // Declare a variable for the cluster manager.
@@ -474,24 +638,74 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         return polylineOptions;
     }
 
-    private void displayView(int position) {
-        fragment = null;
-        String fragmentTags = "";
-        switch (position) {
-            case 0:
-                fragment = new SearchFragment();
-                break;
+    @Override
+    public void onCameraMoveStarted(int reason) {
 
-            default:
-                break;
-        }
+        if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+            View decorView = getWindow().getDecorView();
+            if(Build.VERSION.SDK_INT >= 19 ){
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);}
 
-        if (fragment != null) {
-            fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, fragmentTags).commit();
+            if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            }        } else if (reason == GoogleMap.OnCameraMoveStartedListener
+                .REASON_API_ANIMATION) {
+            View decorView = getWindow().getDecorView();
+            if(Build.VERSION.SDK_INT >= 19 ){
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);}
+
+            if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            }        } else if (reason == GoogleMap.OnCameraMoveStartedListener
+                .REASON_DEVELOPER_ANIMATION) {
+            View decorView = getWindow().getDecorView();
+            if(Build.VERSION.SDK_INT >= 19 ){
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);}
+
+            if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            }        }
+    }
+
+    @Override
+    public void onCameraMove() {
+        View decorView = getWindow().getDecorView();
+        if(Build.VERSION.SDK_INT >= 19 ){
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);}
+
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
+    }
+
+    @Override
+    public void onCameraMoveCanceled() {
+    }
+
+    @Override
+    public void onCameraIdle() {
+    }
 }
 
 
 
-}
