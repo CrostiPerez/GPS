@@ -13,13 +13,17 @@ public class RutaIda {
         return nombre;
     }
 
+    public static void setNombre(String nombre) {
+        RutaIda.nombre = nombre;
+    }
+
     public static String nombre;
     public static ArrayList<LatLng> getLines (int route) {
         ArrayList<LatLng> line = new ArrayList<>();
 
         switch (route) {
             case R.id.Ruta92:
-                nombre = "Ruta 92";
+                setNombre(nombre = "Ruta 92");
                 line.add(new LatLng(	20.548940000,-100.392350000	));
                 line.add(new LatLng(	20.549110000,-100.392450000	));
                 line.add(new LatLng(	20.549400000,-100.392600000	));
@@ -748,6 +752,7 @@ public class RutaIda {
 
                 break;
             case R.id.Ruta137:
+                setNombre(nombre = "Ruta 137");
                 line.add(new LatLng(  	20.586630000,-100.387230000	));
                 line.add(new LatLng(  	20.586550000,-100.387410000	));
                 line.add(new LatLng(  	20.586220000,-100.388260000	));

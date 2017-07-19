@@ -20,8 +20,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +65,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     PolylineOptions polylineIda, polylineVuelta;
     TextView nombreRuta;
     String NombredeRuta;
+    FloatingActionButton mSearchView;
+    View mDecorView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         map = SupportMapFragment.newInstance();
@@ -72,6 +76,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);                            //Llamada a la layout principal de la aplicación
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
 
         fab1 = (FloatingActionButton) findViewById(R.id.fab_plus);
         fab2 = (FloatingActionButton) findViewById(R.id.fab2);
@@ -178,7 +184,18 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                     }
                 }
             }});
+        View decorView = getWindow().getDecorView();
+        if(Build.VERSION.SDK_INT >= 19 ){
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);}
 
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
             this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -200,7 +217,41 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     build();      //Se usa el objeto client para mandar llamar la API KEY
     // displayView(0);
 
+        if(Build.VERSION.SDK_INT < 19 || Build.VERSION.SDK_INT >= 21){
+            FrameLayout statusBar = (FrameLayout) findViewById(R.id.statusBar);
+            ViewGroup.LayoutParams layoutParams = statusBar.getLayoutParams();
+            layoutParams.height = 0;
+        }
+       /* mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, final String newQuery) {
+
+                //get suggestions based on newQuery
+
+                //pass them on to the search view
+                mSearchView.swapSuggestions(newSuggestions);
+            }
+        });*/
 }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasfocus){
+        super.onWindowFocusChanged(hasfocus);
+        View decorView = getWindow().getDecorView();
+        if(Build.VERSION.SDK_INT >= 19 ){
+        if(hasfocus){
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);}
+
+    }
+    else  if (hasfocus && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+    }
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -265,7 +316,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         queretaro = new LatLng(20.59155, -100.400589);                      //Se le asignan al objeto queretaro, coordenadas
-
+        mMap.setPadding(0,150,0,85);
         googleMap.setOnMarkerDragListener(this);                            //Para agregar un evento al arrastrar un marcador
         mMap.setOnMapClickListener(this);                                   //Para agreagar un evento al dar click en un mapa
 
@@ -278,9 +329,10 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
             mMap.clear();                                                    //Limpia el mapa
 
             polylineIda = Comunicator.getPolylineIda();                      //Crea un objeto polyline que llama a las coordenadas guardadas en el comunicador
-            NombredeRuta = Comunicator.getNombre();
+            NombredeRuta = RutaIda.getNombre();
             nombreRuta.setText(NombredeRuta);
             nombreRuta.setVisibility(View.VISIBLE);
+
             mMap.addPolyline(setStyle(                                      //Agrega la polyline ya con todas sus características en el mapa
                     polylineIda,
                     getResources().getColor(R.color.polylineIdaGruesa),
@@ -433,6 +485,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                 .snippet("Has apuntado, aquí")
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+
+
     }
 
     // Declare a variable for the cluster manager.
@@ -492,6 +546,5 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         }
 }
 
-
-
 }
+

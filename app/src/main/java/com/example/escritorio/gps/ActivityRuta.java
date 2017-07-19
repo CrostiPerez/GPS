@@ -1,5 +1,6 @@
 package com.example.escritorio.gps;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -41,7 +42,7 @@ public class ActivityRuta extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rutas);
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -65,9 +66,5 @@ public class ActivityRuta extends AppCompatActivity {
         RutaIda.getNombre();
         Comunicator.setNombre(nombre);
     }
-    public void changeValues(View view){
-        String text = getResources().getString(R.string.ruta_92);
-        TextView nombreruta = (TextView)findViewById(R.id.nombre);
-        nombreruta.setText(text);
-    }
+
 }

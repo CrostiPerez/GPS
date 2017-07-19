@@ -54,6 +54,7 @@
         <activity
             android:name=".ActivityRuta"
             android:label="@string/title_activity_ruta"
+            android:theme="@style/AppTheme2">
             android:parentActivityName=".ActivityMain">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
