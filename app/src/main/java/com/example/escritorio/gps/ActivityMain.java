@@ -286,7 +286,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     addApi(AppIndex.API).
 
     build();      //Se usa el objeto client para mandar llamar la API KEY
-    // displayView(0);
+   
 
         if(Build.VERSION.SDK_INT < 19 || Build.VERSION.SDK_INT >= 21){
             FrameLayout statusBar = (FrameLayout) findViewById(R.id.statusBar);
