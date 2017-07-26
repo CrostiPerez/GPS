@@ -293,16 +293,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
             ViewGroup.LayoutParams layoutParams = statusBar.getLayoutParams();
             layoutParams.height = 0;
         }
-       /* mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
-            @Override
-            public void onSearchTextChanged(String oldQuery, final String newQuery) {
 
-                //get suggestions based on newQuery
-
-                //pass them on to the search view
-                mSearchView.swapSuggestions(newSuggestions);
-            }
-        });*/
 
         setupSearchBar();
 }
