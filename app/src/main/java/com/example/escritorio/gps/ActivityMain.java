@@ -379,7 +379,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         queretaro = new LatLng(20.59155, -100.400589);                      //Se le asignan al objeto queretaro, coordenadas
-        mMap.setPadding(0,150,0,85);
+        mMap.setPadding(0,280,0,85);                            //Ajustar marco del mapa
         googleMap.setOnMarkerDragListener(this);                            //Para agregar un evento al arrastrar un marcador
         mMap.setOnMapClickListener(this);                                   //Para agreagar un evento al dar click en un mapa
 

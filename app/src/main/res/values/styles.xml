@@ -10,6 +10,7 @@
         <item name="itemIconTint">@color/colorPrimary</item>
         <item name="titleTextColor">@color/colorTexto</item>
         <item name="colorControlNormal">@color/colorTexto</item>
+        <item name="android:textColorSecondary">@color/black</item>
 
     </style>
     <style name="AppTheme.NoActionBar">
