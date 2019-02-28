@@ -74,10 +74,20 @@ public class ClusterRenderer_Blue extends DefaultClusterRenderer<MyItem> {
     }
 
     @Override
+    public void setMinClusterSize(int minClusterSize) {
+        super.setMinClusterSize(minClusterSize);
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+    }
+
+    @Override
     protected void onBeforeClusterItemRendered(MyItem item,
                                                MarkerOptions markerOptions) {
 
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camion)).title("Parada");
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.camion)).title("Parada").snippet("prueba");
     }
 
     @Override

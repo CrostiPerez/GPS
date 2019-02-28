@@ -53,9 +53,6 @@ public class Paradas {
                 parada.add(new MarkerOptions().position(new LatLng(	20.636234, -100.400818	)));
                 parada.add(new MarkerOptions().position(new LatLng(	20.638544, -100.400584	)));
 
-
-
-
                 break;
             case R.id.Ruta137:
                 break;

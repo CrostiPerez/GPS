@@ -73,7 +73,7 @@
     "elementType": "labels.text",
     "stylers": [
       {
-        "visibility": "off"
+        "visibility": "on"
       }
     ]
   },
@@ -90,7 +90,7 @@
     "featureType": "poi.business",
     "stylers": [
       {
-        "visibility": "off"
+        "visibility": "on"
       }
     ]
   },
@@ -126,7 +126,7 @@
     "elementType": "labels.icon",
     "stylers": [
       {
-        "visibility": "off"
+        "visibility": "on"
       }
     ]
   },

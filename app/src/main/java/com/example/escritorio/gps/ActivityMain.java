@@ -41,6 +41,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.clustering.ClusterManager;
 
@@ -54,7 +55,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         OnMapReadyCallback, GoogleMap.OnMarkerDragListener,GoogleMap.OnMapClickListener, GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraMoveCanceledListener,
-        GoogleMap.OnCameraIdleListener{
+        GoogleMap.OnCameraIdleListener,
+        GoogleMap.OnPoiClickListener{
     FloatingSearchView mSearchView;
 
     SupportMapFragment map;
@@ -63,7 +65,6 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     private GoogleApiClient client;                                  //Objeto del cliente de las APIS de Google
     LatLng queretaro;                                                //Objeto latitud y longitud para la ubicación general de Querétaro
     Marker marker;                                                   //Objeto para un marcador
-
 
     FloatingActionButton fab1, fab2, fab3;
     Animation FabOpen, FabClose, FabGirar, FabAntiGirar;
@@ -132,7 +133,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
+        mSearchView =  findViewById(R.id.floating_search_view);
         mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
@@ -150,14 +151,14 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         //now search view controlling drawer open/closer
 
 
-        fab1 = (FloatingActionButton) findViewById(R.id.fab_plus);
-        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
-        fab3 = (FloatingActionButton) findViewById(R.id.fab3);
+        fab1 = findViewById(R.id.fab_plus);
+        fab2 = findViewById(R.id.fab2);
+        fab3 = findViewById(R.id.fab3);
         FabOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
         FabClose = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
         FabGirar = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
         FabAntiGirar = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anti_rotate);
-        nombreRuta = (TextView)findViewById(R.id.nombre);
+        nombreRuta = findViewById(R.id.nombre);
         fab1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick (View v) {
@@ -171,7 +172,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                     if (!Comunicator.polylinesAreNull()) {                               //Cuando el mapa no esté vacío, hacer..
                         mMap.clear();                                                    //Limpia el mapa
 
-
+                        mClusterManager.clearItems();
                         polylineIda = Comunicator.getPolylineIda();                      //Crea un objeto polyline que llama a las coordenadas guardadas en el comunicador
 
                         mMap.addPolyline(setStyle(                                      //Agrega la polyline ya con todas sus características en el mapa
@@ -286,7 +287,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     addApi(AppIndex.API).
 
     build();      //Se usa el objeto client para mandar llamar la API KEY
-   
+
 
         if(Build.VERSION.SDK_INT < 19 || Build.VERSION.SDK_INT >= 21){
             FrameLayout statusBar = (FrameLayout) findViewById(R.id.statusBar);
@@ -384,7 +385,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         mMap.setOnMapClickListener(this);                                   //Para agreagar un evento al dar click en un mapa
 
         MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(       //Creación de un objeto del estilo del mapa
-                this, R.raw.day);                                           //Se puede modificar el estilo en la carpeta raw
+                this, R.raw.plata);                                           //Se puede modificar el estilo en la carpeta raw
         mMap.setMapStyle(style);                                            //Se aplica el estilo al mapa
 
         mMap.setOnCameraIdleListener(this);
@@ -442,8 +443,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);                                         //Se establece un tipo de mapa, ejemplos, satelital, normal, híbrido, etc
         mMap.getUiSettings().setZoomControlsEnabled(true);                                  //Se activan los controles de zoom sobre el mapa (+ y -)
         mMap.getUiSettings().setMapToolbarEnabled(false);                                   //Se desactivan las herramientas de GoogleMaps en el mapa
-
-
+       // mMap.setTrafficEnabled(true);                                                     //Se activa el tráfico
+        mMap.setOnPoiClickListener(this);                                                   //Los POI dan información al presionarlos
         //Comparar versiones para hacer compatible en versiones inferiores a la 6 en el aspecto del permiso de ubicación
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
@@ -452,8 +453,16 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MI_PERMISO_ACCESS_FINE_LOCATION);
             }
         }
-    }
 
+    }
+    @Override
+    public void onPoiClick(PointOfInterest poi) {
+        Toast.makeText(getApplicationContext(), "Clicked: " +
+                        poi.name + "\nPlace ID:" + poi.placeId +
+                        "\nLatitude:" + poi.latLng.latitude +
+                        " Longitude:" + poi.latLng.longitude,
+                Toast.LENGTH_SHORT).show();
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
